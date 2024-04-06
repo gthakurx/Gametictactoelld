@@ -1,4 +1,5 @@
 import controllers.GameController;
+import exceptions.InvalidGameParamException;
 import models.*;
 import strategy.winningStrategy.OrderOneColoumnWinningStrategy;
 import strategy.winningStrategy.OrderOneDiagonalWinningStrategy;
@@ -19,13 +20,15 @@ public class Main {
                 new Bot(new Symbol('O'),"Aman",BotDifficultyLevel.EASY)
         );
         try{
-            game=gameController.createGame(3, players,
+            game=gameController.createGame(dimension,
+                    players,
                     List.of(
                             new OrderOneDiagonalWinningStrategy(players),
                             new OrderOneColoumnWinningStrategy(dimension,players),
                             new OrderOneRowWinningStrategy(dimension,players)
-                    ));
-        }catch(Exception e){
+                    )
+            );
+        }catch(InvalidGameParamException e){
             System.out.println("Something went wrong ");
             return ;
         }

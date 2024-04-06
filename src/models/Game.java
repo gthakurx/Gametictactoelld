@@ -1,5 +1,6 @@
 package models;
 
+import exceptions.InvalidGameParamException;
 import strategy.winningStrategy.WinningStrategy;
 
 import java.util.ArrayList;
@@ -91,9 +92,9 @@ public class Game {
             }
             return true;
         }
-        public Game build(){
+        public Game build() throws InvalidGameParamException {
             if(!valid()){
-                throw new RuntimeException("Invalid params for the game");
+                throw new InvalidGameParamException("Invalid params for the game");
             }
             return new Game(dimensions,players,winningStrategies);
         }
