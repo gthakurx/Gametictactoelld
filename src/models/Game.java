@@ -2,7 +2,6 @@ package models;
 
 import strategy.winningStrategy.WinningStrategy;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -167,10 +166,40 @@ public class Game {
         }
         return board.getBoard().get(row).get(col).getCellState().equals(CellState.EMPTY);
     }
+    public void undo(){
+        if(moves.size()==0){
+            System.out.println("No moves happend cannot undo");
+            return ;
+        }
+        Move lastMove=moves.get(moves.size()-1);
+        for(WinningStrategy winningStrategy:winningStrategies){
+            winningStrategy.handleUndo(board,lastMove);
+        }
+        Cell cellInBoard=lastMove.getCell();
+        cellInBoard.setCellState(CellState.EMPTY);
+        cellInBoard.setPlayer(null);
+        moves.remove(lastMove);
+
+        currentMovePlayerIdx -=1;
+        currentMovePlayerIdx +=players.size();
+        currentMovePlayerIdx %=players.size();
+    }
+    // [A B C D]
+    // ^
+    // 0
+    // -1
+    // -1 % 4 == -1
+    // (-1 + 4) == 3
+    // 3 % 4 == 3
     public void makeMove(){
         Player currentPlayer=players.get(currentMovePlayerIdx);
-        Cell proposedCell=currentPlayer.makeMove();
+        System.out.println("it is "+currentPlayer.getName()+"'s turn " +" CurrentMovePlayerIdx is :"+ currentMovePlayerIdx);
+        Cell proposedCell=currentPlayer.makeMove(board);
+
+        System.out.println("Moves made at row:"+proposedCell.getRow()+" col : "+ proposedCell.getCol());
+
         if(!validateMove(proposedCell)){
+            System.out.println("invalid Move please try again ");
             return ;
         }
         Cell cellInBoard=board.getBoard().get(proposedCell.getRow()).get(proposedCell.getCol());
@@ -180,17 +209,17 @@ public class Game {
         Move move=new Move(currentPlayer,cellInBoard);
         moves.add(move);
         //check winner
-        if (checkWinner(currentPlayer, move)) return;
+        if (checkGameWon(currentPlayer, move)) return;
         //check draw
         if(moves.size()== board.getSize()* board.getSize()){
             gameStatus=GameStatus.DRAW;
             return;
         }
         currentMovePlayerIdx+=1;
-        currentMovePlayerIdx %=players.size();
+        currentMovePlayerIdx %=players.size(); // this will ensure the players are taking the turns
     }
 
-    private boolean checkWinner(Player currentPlayer, Move move) {
+    private boolean checkGameWon(Player currentPlayer, Move move) {
         for(WinningStrategy winningStrategy:winningStrategies){
             if(winningStrategy.checkWinner(board, move)){
                 gameStatus=GameStatus.ENDED;

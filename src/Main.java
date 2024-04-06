@@ -13,23 +13,27 @@ public class Main {
         GameController gameController=new GameController();
         Scanner scanner=new Scanner(System.in);
         Game game;
+        int dimension=3;
+        List<Player> players=List.of(
+                new Player(new Symbol('X'),"Gaurav", PlayerType.HUMAN),
+                new Bot(new Symbol('O'),"Aman",BotDifficultyLevel.EASY)
+        );
         try{
-            game=gameController.createGame(3, List.of(
-                    new Player(new Symbol('X'),"Gaurav", PlayerType.HUMAN),
-                    new Bot(new Symbol('O'),"Aman",BotDifficultyLevel.EASY)
-                    ),
+            game=gameController.createGame(3, players,
                     List.of(
-                            new OrderOneDiagonalWinningStrategy(),
-                            new OrderOneColoumnWinningStrategy(),
-                            new OrderOneRowWinningStrategy()
+                            new OrderOneDiagonalWinningStrategy(players),
+                            new OrderOneColoumnWinningStrategy(dimension,players),
+                            new OrderOneRowWinningStrategy(dimension,players)
                     ));
         }catch(Exception e){
             System.out.println("Something went wrong ");
             return ;
         }
         //while game status in progress
+        System.out.println("-------- Game is starting ---------");
         while(gameController.getGameStatus(game).equals(GameStatus.IN_PROGRESS)) {
 
+            System.out.println("-------how Board looks like -----------");
             //print board
             gameController.displayBoard(game);
             //orint undo

@@ -21,10 +21,10 @@ public class GameController {
             game.printBoard();
     }
     public void undo(Game game){
-
+        game.undo();
     }
     public void makeMove(Game game){
-
+        game.makeMove();
     }
     public GameStatus getGameStatus(Game game){
         return game.getGameStatus();
