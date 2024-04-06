@@ -56,6 +56,7 @@ public class Main {
 //            System.out.println("Game is draw");
 //        }
         gameController.printResult(game);
+        gameController.displayBoard(game);
             //if winner print winner
             //else print draw
     }
